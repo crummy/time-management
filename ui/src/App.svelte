@@ -3,14 +3,14 @@
   import Home from "./routes/Home.svelte";
   import Login from "./routes/Login.svelte";
   import router from "page";
+  import { check } from "./api"
 
   let page;
 	let params;
-	let user = null; // TODO
 
-  router("/", () => {
-		if (!user) page = Login
-		else page = Home
+  router("/", async () => {
+		if (await check()) page = Home
+		else page = Login
 	});
   router("/users", () => (page = Users));
 

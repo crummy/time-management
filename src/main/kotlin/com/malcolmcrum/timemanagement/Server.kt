@@ -2,15 +2,14 @@ package com.malcolmcrum.timemanagement
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
-import io.ktor.auth.Authentication
-import io.ktor.auth.UserIdPrincipal
-import io.ktor.auth.authenticate
-import io.ktor.auth.jwt.jwt
 import io.ktor.features.CORS
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
 import io.ktor.http.HttpMethod
+import io.ktor.http.content.default
+import io.ktor.http.content.files
+import io.ktor.http.content.static
 import io.ktor.routing.*
 import io.ktor.serialization.json
 import io.ktor.sessions.SessionTransportTransformerMessageAuthentication
@@ -18,24 +17,13 @@ import io.ktor.sessions.Sessions
 import io.ktor.sessions.cookie
 import org.slf4j.event.Level
 
-const val SESSION = "SESSION"
-
 fun Application.main() {
     val userDao = UserDao()
     val passwordDao = PasswordDao()
     val passwordHasher = PasswordHasher()
     val userController = UserController(userDao, passwordDao, passwordHasher)
-    val simpleJwt = SimpleJWT("thisismyjwtsecret")
-    val securityController = SecurityController(passwordDao, passwordHasher, simpleJwt)
+    val securityController = SecurityController(passwordDao, passwordHasher, userDao)
 
-    install(Authentication) {
-        jwt {
-            verifier(simpleJwt.verifier)
-            validate {
-                UserIdPrincipal(it.payload.getClaim(SESSION).asString())
-            }
-        }
-    }
     install(DefaultHeaders)
     install(CallLogging) {
         level = Level.INFO
@@ -53,15 +41,17 @@ fun Application.main() {
         header("Accept")
     }
     install(Sessions) {
-        cookie<String>(SESSION) {
+        cookie<String>(USER_SESSION) {
+            cookie.path = "/"
             val secretSignKey = "averylongkeythatishardtoguess".toByteArray()
             transform(SessionTransportTransformerMessageAuthentication(secretSignKey))
         }
     }
     routing {
-        post("login") { securityController.login(call) }
-        route("users") {
-            authenticate {
+        route("api") {
+            get("check") { securityController.check(call) }
+            post("login") { securityController.login(call) }
+            route("users") {
                 get { userController.getAll(call) }
                 post { userController.create(call) }
                 route(":userId") {
@@ -71,6 +61,9 @@ fun Application.main() {
                 }
             }
         }
+        static("") {
+            files("ui/public")
+            default("ui/public/index.html")
+        }
     }
 }
-

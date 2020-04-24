@@ -5,6 +5,13 @@ const jsonHeaders = {
   "Content-Type": "application/json"
 }
 
+export const check = async () => {
+  let response = await fetch(`${baseUrl}/check`, {
+    credentials: "same-origin"
+  });
+  return response.ok
+}
+
 export const getUsers = async () => {
   let response = await fetch(`${baseUrl}/users`);
   return response.json();
