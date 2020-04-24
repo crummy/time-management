@@ -1,8 +1,8 @@
 package com.malcolmcrum.timemanagement
 
-import io.javalin.http.BadRequestResponse
-import io.javalin.http.Context
-import io.javalin.http.NotFoundResponse
+import io.ktor.application.ApplicationCall
+import io.ktor.request.receive
+import io.ktor.response.respond
 
 class UserController(private val userDao: UserDao,
                      private val passwordDao: PasswordDao,
@@ -12,41 +12,38 @@ class UserController(private val userDao: UserDao,
         val emptyResponse = mapOf<String, String>()
     }
 
-    fun create(ctx: Context) {
-        val newUser = ctx.bodyAsClass(NewUser::class.java)
+    suspend fun create(call: ApplicationCall) {
+        val newUser = call.receive(NewUser::class)
         val hash = passwordHasher.toHash(newUser.password)
         val user = newUser.toUser()
         userDao[user.id] = user
         passwordDao[user.id] = hash
-        ctx.json(user)
+        call.respond(user)
     }
 
-    fun delete (ctx: Context) {
-        val id = ctx.pathParam("userId")
-        val userId = UserId(id)
+    suspend fun delete (call: ApplicationCall) {
+        val userId = call.parameters["userId"]!!
         val removed = userDao.remove(userId)
-        ctx.json(removed ?: emptyResponse)
+        call.respond(removed ?: emptyResponse)
     }
 
-    fun getAll(ctx: Context) {
-        ctx.json(userDao.getAll())
+    suspend fun getAll(call: ApplicationCall) {
+        call.respond(userDao.getAll())
     }
 
-    fun getOne (ctx: Context) {
-        val id = ctx.pathParam("userId")
-        val userId = UserId(id)
-        val user = userDao[userId] ?: throw NotFoundResponse("No user found: $userId")
-        ctx.json(user)
+    suspend fun getOne (call: ApplicationCall) {
+        val userId = call.parameters["userId"]!!
+        val user = userDao[userId] ?: return call.notFound("No user found: $userId")
+        call.respond(user)
     }
 
-    fun update (ctx: Context) {
-        val id = ctx.pathParam("userId")
-        val userId = UserId(id)
-        val user = ctx.bodyAsClass(User::class.java)
+    suspend fun update (call: ApplicationCall) {
+        val userId = call.parameters["userId"]!!
+        val user = call.receive(User::class)
         if (user.id != userId) {
-            throw BadRequestResponse("User ID doesn't match: ${user.id} and $userId")
+            return call.badRequest("User ID doesn't match: ${user.id} and $userId")
         }
         userDao[userId] = user
-        ctx.json(user)
+        call.respond(user)
     }
 }

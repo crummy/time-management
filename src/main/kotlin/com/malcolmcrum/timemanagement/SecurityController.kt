@@ -1,25 +1,38 @@
 package com.malcolmcrum.timemanagement
 
-import io.javalin.http.Context
-import io.javalin.http.ForbiddenResponse
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
+import io.ktor.application.ApplicationCall
+import io.ktor.http.HttpStatusCode.Companion.Forbidden
+import io.ktor.http.HttpStatusCode.Companion.OK
+import io.ktor.request.receive
+import io.ktor.response.respond
+
 
 class SecurityController(private val passwordDao: PasswordDao,
-                         private val passwordHasher: PasswordHasher) {
-    fun login(ctx: Context) {
-        val login = ctx.bodyAsClass(UserLogin::class.java)
+                         private val passwordHasher: PasswordHasher,
+                         private val simpleJwt: SimpleJWT) {
+    suspend fun login(call: ApplicationCall) {
+        val login = call.receive(UserLogin::class)
         val hash = passwordHasher.toHash(login.password)
         val existingHash = passwordDao[login.id]
         if (hash == existingHash) {
-            ctx.login()
-            ctx.status(200)
+            val jwt = simpleJwt.sign(login.id)
+            call.respond(OK, jwt)
         } else {
-            throw ForbiddenResponse("User ${login.id} denied login")
+            call.respond(Forbidden, "User ${login.id} denied login")
         }
     }
 
-    @JvmName("addLoginHeader")
-    private fun Context.login() {
-        this.cookieStore("login", "foo")
-    }
+}
 
+class SimpleJWT(secret: String) {
+    private val algorithm = Algorithm.HMAC256(secret)
+    val verifier = JWT.require(algorithm).build()!!
+
+    fun sign(userId: String): String = JWT.create().withClaim(USER_ID, userId).sign(algorithm)
+
+    companion object {
+        const val USER_ID = "userId"
+    }
 }

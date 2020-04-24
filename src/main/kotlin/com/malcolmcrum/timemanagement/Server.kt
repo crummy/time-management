@@ -1,42 +1,76 @@
 package com.malcolmcrum.timemanagement
+import io.ktor.application.Application
+import io.ktor.application.call
+import io.ktor.application.install
+import io.ktor.auth.Authentication
+import io.ktor.auth.UserIdPrincipal
+import io.ktor.auth.authenticate
+import io.ktor.auth.jwt.jwt
+import io.ktor.features.CORS
+import io.ktor.features.CallLogging
+import io.ktor.features.ContentNegotiation
+import io.ktor.features.DefaultHeaders
+import io.ktor.http.HttpMethod
+import io.ktor.routing.*
+import io.ktor.serialization.json
+import io.ktor.sessions.SessionTransportTransformerMessageAuthentication
+import io.ktor.sessions.Sessions
+import io.ktor.sessions.cookie
+import org.slf4j.event.Level
 
-import io.javalin.Javalin;
-import io.javalin.apibuilder.ApiBuilder.*;
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+const val SESSION = "SESSION"
 
-val log: Logger = LoggerFactory.getLogger("SERVER")
-
-fun main() {
-    val port = System.getenv()["PORT"]?.toInt() ?: 8080
-
-    val app = Javalin.create { config ->
-        config.defaultContentType = "application/json"
-        //config.addStaticFiles("/public")
-        config.enableCorsForAllOrigins()
-        config.requestLogger { ctx, ms -> log.info("${ctx.method()} ${ctx.path()} ${ctx.status()} - ${ms}ms") }
-    }
-
+fun Application.main() {
     val userDao = UserDao()
     val passwordDao = PasswordDao()
     val passwordHasher = PasswordHasher()
     val userController = UserController(userDao, passwordDao, passwordHasher)
-    val securityController = SecurityController(passwordDao, passwordHasher)
+    val simpleJwt = SimpleJWT("thisismyjwtsecret")
+    val securityController = SecurityController(passwordDao, passwordHasher, simpleJwt)
 
-    app.routes {
-        post("login", securityController::login)
-        path("users") {
-            get(userController::getAll)
-            post(userController::create)
-            path(":user-id") {
-                get(userController::getOne)
-                patch(userController::update)
-                delete(userController::delete)
+    install(Authentication) {
+        jwt {
+            verifier(simpleJwt.verifier)
+            validate {
+                UserIdPrincipal(it.payload.getClaim(SESSION).asString())
             }
         }
     }
-
-    app.start(port)
+    install(DefaultHeaders)
+    install(CallLogging) {
+        level = Level.INFO
+    }
+    install(ContentNegotiation) {
+        json()
+    }
+    install(CORS) { // TODO remove this when hosted
+        anyHost()
+        method(HttpMethod.Options)
+        header("Sec-Fetch-Dest")
+        header("User-Agent")
+        header("Referer")
+        header("Content-Type")
+        header("Accept")
+    }
+    install(Sessions) {
+        cookie<String>(SESSION) {
+            val secretSignKey = "averylongkeythatishardtoguess".toByteArray()
+            transform(SessionTransportTransformerMessageAuthentication(secretSignKey))
+        }
+    }
+    routing {
+        post("login") { securityController.login(call) }
+        route("users") {
+            authenticate {
+                get { userController.getAll(call) }
+                post { userController.create(call) }
+                route(":userId") {
+                    get { userController.getOne(call) }
+                    patch { userController.update(call) }
+                    delete { userController.delete(call) }
+                }
+            }
+        }
+    }
 }
 
-data class Error(val error: String)

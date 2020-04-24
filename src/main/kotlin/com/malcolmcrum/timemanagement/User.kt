@@ -1,6 +1,9 @@
 package com.malcolmcrum.timemanagement
 
-data class User(val id: UserId, val name: String, val permission: Permission) {
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class User(val id: String, val name: String, val permission: Permission) {
     enum class Permission {
         USER,
         MANAGER,
@@ -8,14 +11,10 @@ data class User(val id: UserId, val name: String, val permission: Permission) {
     }
 }
 
-data class NewUser(val id: UserId, val name: String, val password: Password) {
+@Serializable
+data class NewUser(val id: String, val name: String, val password: String) {
     fun toUser() = User(id, name, User.Permission.USER)
 }
 
-inline class UserId(val id: String)
-
-data class UserLogin(val id: UserId, val password: Password)
-
-inline class PasswordHash(val hash: ByteArray)
-
-inline class Password(val password: String)
+@Serializable
+data class UserLogin(val id: String, val password: String)

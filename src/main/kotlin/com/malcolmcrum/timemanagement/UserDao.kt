@@ -1,13 +1,13 @@
 package com.malcolmcrum.timemanagement
 
 class UserDao {
-    private val users = mutableMapOf<UserId, User>()
+    private val users = mutableMapOf<String, User>()
 
-    operator fun get(id: UserId): User? {
+    operator fun get(id: String): User? {
         return users[id]
     }
 
-    operator fun set(id: UserId, user: User) {
+    operator fun set(id: String, user: User) {
         users[id] = user
     }
 
@@ -15,7 +15,7 @@ class UserDao {
         return users.values
     }
 
-    fun remove(userId: UserId): User? {
+    fun remove(userId: String): User? {
         return users.remove(userId)
     }
 }
