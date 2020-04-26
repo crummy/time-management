@@ -34,7 +34,7 @@ export const signIn = (id, password) => {
 }
 
 export const signUp = (id, password, name) => {
-  return fetch(`${baseUrl}/users`, {
+  return fetch(`${baseUrl}/signup`, {
     method: "POST",
     body: JSON.stringify({ id, password, name }),
     headers: jsonHeaders

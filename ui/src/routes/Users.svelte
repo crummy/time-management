@@ -16,9 +16,9 @@
 <table>
   {#each users as user}
     <tr>
-      <td>user.id</td>
-      <td>user.name</td>
-      <td>user.permission</td>
+      <td>{user.id}</td>
+      <td>{user.name}</td>
+      <td>{user.permission}</td>
     </tr>
   {/each}
 </table>

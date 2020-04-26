@@ -1,18 +1,24 @@
 <script>
   import Users from "./routes/Users.svelte";
-  import Home from "./routes/Home.svelte";
   import Login from "./routes/Login.svelte";
+  import Error from "./routes/Error.svelte";
+  import Timesheet from "./routes/Timesheet.svelte";
   import router from "page";
-  import { check } from "./api"
+  import { check as isLoggedIn } from "./api"
 
   let page;
-	let params;
+  let params;
+  
+  const checkLogin = async (ctx, next) => {
+    const loggedIn = await isLoggedIn()
+    if (!loggedIn) router.redirect("/login")
+    else next()
+  }
 
-  router("/", async () => {
-		if (await check()) page = Home
-		else page = Login
-	});
-  router("/users", () => (page = Users));
+  router("/", checkLogin, () => router.redirect("/users"));
+  router("/login", () => (page = Login))
+  router("/users", checkLogin, () => (page = Users));
+  router("/*", () => (page = Error))
 
   router.start();
 </script>

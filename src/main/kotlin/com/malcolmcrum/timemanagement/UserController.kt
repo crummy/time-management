@@ -4,24 +4,11 @@ import com.malcolmcrum.timemanagement.Permissions.authorizeManageUsers
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receive
 import io.ktor.response.respond
-import io.ktor.sessions.sessions
 
-class UserController(private val userDao: UserDao,
-                     private val passwordDao: PasswordDao,
-                     private val passwordHasher: PasswordHasher) {
+class UserController(private val userDao: UserDao) {
 
     companion object {
         val emptyResponse = mapOf<String, String>()
-    }
-
-    suspend fun create(call: ApplicationCall) {
-        val newUser = call.receive(NewUser::class)
-        val hash = passwordHasher.toHash(newUser.password)
-        val user = newUser.toUser()
-        userDao[user.id] = user
-        passwordDao[user.id] = hash
-        call.sessions.set(USER_SESSION, user.id)
-        call.respond(user)
     }
 
     suspend fun delete (call: ApplicationCall) {

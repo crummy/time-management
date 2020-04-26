@@ -2,26 +2,24 @@ package com.malcolmcrum.timemanagement
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
-import io.ktor.features.CORS
-import io.ktor.features.CallLogging
-import io.ktor.features.ContentNegotiation
-import io.ktor.features.DefaultHeaders
+import io.ktor.features.*
 import io.ktor.http.HttpMethod
-import io.ktor.http.content.default
-import io.ktor.http.content.files
-import io.ktor.http.content.static
+import io.ktor.http.HttpStatusCode
+import io.ktor.response.respond
 import io.ktor.routing.*
 import io.ktor.serialization.json
+import io.ktor.sessions.SessionStorageMemory
 import io.ktor.sessions.SessionTransportTransformerMessageAuthentication
 import io.ktor.sessions.Sessions
 import io.ktor.sessions.cookie
 import org.slf4j.event.Level
+import work.jeong.murry.ktor.features.EasySpaFeature
 
 fun Application.main() {
     val userDao = UserDao()
     val passwordDao = PasswordDao()
     val passwordHasher = PasswordHasher()
-    val userController = UserController(userDao, passwordDao, passwordHasher)
+    val userController = UserController(userDao)
     val securityController = SecurityController(passwordDao, passwordHasher, userDao)
 
     install(DefaultHeaders)
@@ -41,29 +39,38 @@ fun Application.main() {
         header("Accept")
     }
     install(Sessions) {
-        cookie<String>(USER_SESSION) {
+        cookie<User>(USER_SESSION, SessionStorageMemory()) {
             cookie.path = "/"
             val secretSignKey = "averylongkeythatishardtoguess".toByteArray()
             transform(SessionTransportTransformerMessageAuthentication(secretSignKey))
+        }
+    }
+    install(EasySpaFeature) {
+        staticRootDocs = "ui/public"
+        defaultFile = "index.html"
+        apiUrl = "/api"
+    }
+    install(StatusPages) {
+        exception<ForbiddenException> {
+            call.respond(HttpStatusCode.Forbidden)
         }
     }
     routing {
         route("api") {
             get("check") { securityController.check(call) }
             post("login") { securityController.login(call) }
+            post("signup") { securityController.signUp(call)}
             route("users") {
                 get { userController.getAll(call) }
-                post { userController.create(call) }
                 route(":userId") {
                     get { userController.getOne(call) }
                     patch { userController.update(call) }
                     delete { userController.delete(call) }
                 }
             }
-        }
-        static("") {
-            files("ui/public")
-            default("ui/public/index.html")
+            route("timesheets") {
+
+            }
         }
     }
 }

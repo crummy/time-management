@@ -11,8 +11,8 @@ class UserDao {
         users[id] = user
     }
 
-    fun getAll(): Collection<User> {
-        return users.values
+    fun getAll(): List<User> {
+        return users.values.toList()
     }
 
     fun remove(userId: String): User? {

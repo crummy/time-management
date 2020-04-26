@@ -12,6 +12,8 @@
     if (!response.ok) {
       const reason = json.error ? json.error : "An unknown error occurred";
       error("Sign in failed", reason)
+    } else {
+      page.redirect('/')
     }
   }
 
@@ -22,6 +24,7 @@
       const reason = json.error ? json.error : "An unknown error occurred";
       error("Sign up failed", reason)
     } else {
+      console.log("Signed up!")
       page.redirect('/')
     }
   }
@@ -67,8 +70,8 @@
       <legend>Create a new account</legend>
 
       <div class="pure-control-group">
-        <label for="name">Username</label>
-        <input id="name" type="text" placeholder="Username" bind:value={username} required/>
+        <label for="username">Username</label>
+        <input id="username" type="text" placeholder="Username" bind:value={username} required/>
         <span class="pure-form-message-inline">This is a required field.</span>
       </div>
 
