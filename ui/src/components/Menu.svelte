@@ -2,6 +2,9 @@
   import page from "page"
 
   export let selected = undefined
+  export let permission
+  let admin = permission === "ADMIN"
+  let manager = permission === "MANAGER"
 </script>
 
 <style>
@@ -34,6 +37,9 @@
 <nav class="container">
   <ul>
     <li class:active={selected === "timesheets"}><a href="#/" on:click={() => page.redirect("/timesheets")}>Timesheets</a></li>
-    <li class:active={selected === "users"}><a href="#/" on:click={() => page.redirect("/users")}>Users</a></li>
+    <li class:active={selected === "profile"}><a href="#/" on:click={() => page.redirect("/profile")}>Profile</a></li>
+    {#if manager}
+      <li class:active={selected === "users"}><a href="#/" on:click={() => page.redirect("/users")}>Users</a></li>
+    {/if}
   </ul>
 </nav>

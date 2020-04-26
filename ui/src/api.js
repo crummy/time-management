@@ -9,7 +9,8 @@ export const check = async () => {
   let response = await fetch(`${baseUrl}/check`, {
     credentials: "same-origin"
   });
-  return response.ok
+  if (response.ok) return response.json();
+  else return null;
 }
 
 export const getUsers = async () => {
@@ -20,6 +21,14 @@ export const getUsers = async () => {
 export const createUser = (user) => {
   return fetch(`${baseUrl}/users`, {
     method: "POST",
+    body: JSON.stringify(user),
+    headers: jsonHeaders
+  });
+}
+
+export const updateUser = (user) => {
+  return fetch(`${baseUrl}/users/${user.id}`, {
+    method: "PATCH",
     body: JSON.stringify(user),
     headers: jsonHeaders
   });

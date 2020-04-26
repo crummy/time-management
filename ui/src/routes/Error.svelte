@@ -1,3 +1,13 @@
-<h2>ERROR</h2>
+<script>
+  import Menu from '../components/Menu.svelte'
+  import Message, { error, info } from '../components/Message.svelte'
 
-An error was encountered trying to load the page you requested.
+  export let params;
+  let { user: { permission = null } = {} } = params;
+
+  error("An error was encountered trying to load the page you requested.")
+</script>
+
+<Menu {permission} />
+
+<Message />

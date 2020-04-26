@@ -2,23 +2,31 @@
   import Users from "./routes/Users.svelte";
   import Login from "./routes/Login.svelte";
   import Error from "./routes/Error.svelte";
+  import Profile from "./routes/Profile.svelte";
   import Timesheets from "./routes/Timesheets.svelte";
   import router from "page";
-  import { check as isLoggedIn } from "./api"
+  import { check } from "./api"
 
   let page;
-  let params;
+  let params = {}
   
   const checkLogin = async (ctx, next) => {
-    const loggedIn = await isLoggedIn()
-    if (!loggedIn) router.redirect("/login")
-    else next()
+    if (params.user) {
+      return next()
+    }
+    const user = await check()
+    if (!user) router.redirect("/login")
+    else {
+      params.user = user
+      next()
+    }
   }
 
   router("/", checkLogin, () => router.redirect("/timesheets"));
   router("/login", () => (page = Login))
   router("/users", checkLogin, () => (page = Users));
   router("/timesheets", checkLogin, () => (page = Timesheets));
+  router("/profile", checkLogin, () => (page = Profile));
   router("/*", () => (page = Error))
 
   router.start();

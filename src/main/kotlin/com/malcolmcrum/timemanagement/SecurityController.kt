@@ -43,7 +43,7 @@ class SecurityController(private val passwordDao: PasswordDao,
         val user = call.sessions.get<User>()
         when (user) {
             null -> call.respond(Forbidden)
-            else -> call.respond(OK)
+            else -> call.respond(user)
         }
     }
 }

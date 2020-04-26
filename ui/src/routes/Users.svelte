@@ -3,22 +3,23 @@
   import { getUsers } from "../api";
   import Menu from "../components/Menu.svelte"
 
-  let loadingUsers = true;
+  export let params;
+  let { user } = params;
   let users = [];
 
   onMount(async () => {
     users = await getUsers();
-    loadingUsers = false;
   });
 </script>
 
-<Menu selected="users"/>
+<Menu permission={user.permission} selected="users"/>
 
 <table>
   <thead>
     <tr>
       <td>User ID</td>
       <td>Name</td>
+      <td>Preferred Hours Per Day</td>
       <td>Role</td>
     </tr>
   </thead>
@@ -26,6 +27,7 @@
     <tr>
       <td>{user.id}</td>
       <td>{user.name}</td>
+      <td>{user.preferredWorkingHoursPerDay}</td>
       <td>{user.permission}</td>
     </tr>
   {/each}
