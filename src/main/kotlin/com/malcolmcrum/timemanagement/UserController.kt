@@ -11,7 +11,7 @@ class UserController(private val userDao: UserDao) {
         val emptyResponse = mapOf<String, String>()
     }
 
-    suspend fun delete (call: ApplicationCall) {
+    suspend fun delete(call: ApplicationCall) {
         authorizeManageUsers(call)
         val userId = call.parameters["userId"]!!
         val removed = userDao.remove(userId)
@@ -23,14 +23,14 @@ class UserController(private val userDao: UserDao) {
         call.respond(userDao.getAll())
     }
 
-    suspend fun getOne (call: ApplicationCall) {
+    suspend fun getOne(call: ApplicationCall) {
         authorizeManageUsers(call)
         val userId = call.parameters["userId"]!!
         val user = userDao[userId] ?: return call.notFound("No user found: $userId")
         call.respond(user)
     }
 
-    suspend fun update (call: ApplicationCall) {
+    suspend fun update(call: ApplicationCall) {
         authorizeManageUsers(call)
         val userId = call.parameters["userId"]!!
         val user = call.receive(User::class)

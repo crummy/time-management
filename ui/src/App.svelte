@@ -2,7 +2,7 @@
   import Users from "./routes/Users.svelte";
   import Login from "./routes/Login.svelte";
   import Error from "./routes/Error.svelte";
-  import Timesheet from "./routes/Timesheet.svelte";
+  import Timesheets from "./routes/Timesheets.svelte";
   import router from "page";
   import { check as isLoggedIn } from "./api"
 
@@ -15,9 +15,10 @@
     else next()
   }
 
-  router("/", checkLogin, () => router.redirect("/users"));
+  router("/", checkLogin, () => router.redirect("/timesheets"));
   router("/login", () => (page = Login))
   router("/users", checkLogin, () => (page = Users));
+  router("/timesheets", checkLogin, () => (page = Timesheets));
   router("/*", () => (page = Error))
 
   router.start();
@@ -31,16 +32,17 @@
     margin: 0 auto;
   }
 
-  :global(h1) {
+  h1 {
     color: #ff3e00;
     text-transform: uppercase;
     font-size: 4em;
     font-weight: 100;
+    text-align: center;
   }
 
   @media (min-width: 640px) {
     main {
-      max-width: none;
+      max-width: 800px;
     }
   }
 </style>
@@ -48,6 +50,7 @@
 <svelte:head>
 	<title>Time Management</title>
 </svelte:head>
+<h1>Time Management</h1>
 <main>
   <svelte:component this={page} {params} />
 </main>
