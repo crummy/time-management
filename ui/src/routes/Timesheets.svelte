@@ -57,9 +57,7 @@
     const user = await $user;
     const timesheet = {
       description,
-      date: `${year}-${month
-        .toString()
-        .padStart(2, "0")}-${day.toString().padStart(2, "0")}`,
+      date: { year, month, day},
       hours
     };
     await saveTimesheet(user.id, timesheet);
@@ -177,7 +175,7 @@
           <td>{timesheet.userId}</td>
         {/if}
         <td>{timesheet.description}</td>
-        <td>{timesheet.date}</td>
+        <td>{timesheet.date.year}/{timesheet.date.month}/{timesheet.date.day}</td>
         <td>{timesheet.hours}</td>
         <td>
           <a href="#/" on:click={() => (editedId = timesheet.id)}>Edit</a>
