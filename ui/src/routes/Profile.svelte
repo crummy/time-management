@@ -32,7 +32,7 @@
   }
 </style>
 
-<Menu permission={user.permission} selected="profile" />
+<Menu selected="profile" />
 
 {#await $user}
   <h2>Hello...</h2>

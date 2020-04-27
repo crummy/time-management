@@ -1,9 +1,9 @@
 <script>
-  export let message
+  export let message = {}
   let { title = undefined, text = undefined, warning = false } = message
 </script>
 
-{#if message.text}
+{#if message && message.text}
   <div id="message" class:warning={warning}>
     {#if title}
       <div id="title">{title}</div>

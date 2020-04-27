@@ -4,9 +4,11 @@ import com.malcolmcrum.timemanagement.Permissions.authorizeManageUsers
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receive
 import io.ktor.response.respond
+import io.ktor.sessions.get
+import io.ktor.sessions.sessions
+import io.ktor.sessions.set
 
 class UserController(private val userDao: UserDao) {
-
     companion object {
         val emptyResponse = mapOf<String, String>()
     }
@@ -38,6 +40,10 @@ class UserController(private val userDao: UserDao) {
             return call.badRequest("User ID doesn't match: ${user.id} and $userId")
         }
         userDao[userId] = user
+        val currentUser = call.sessions.get<User>()
+        if (currentUser?.id == user.id) {
+            call.sessions.set(user)
+        }
         call.respond(user)
     }
 }

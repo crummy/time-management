@@ -41,7 +41,7 @@
 <h1>Login</h1>
 
 {#if logIn}
-  <Message params={loginMessage}/>
+  <Message message={loginMessage}/>
   <form class="pure-form pure-form-aligned" on:submit|preventDefault={handleSignIn}>
     <fieldset>
       <legend>Existing user</legend>
@@ -65,7 +65,7 @@
 
   <a href="javascript:;" on:click={() => logIn = false}>Create a new account</a>
 {:else}
-  <Message params={signupMessage}/>
+  <Message message={signupMessage}/>
   <form class="pure-form pure-form-aligned" on:submit|preventDefault={handleSignUp}>
     <fieldset>
       <legend>Create a new account</legend>

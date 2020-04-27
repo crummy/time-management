@@ -9,7 +9,6 @@ import io.ktor.response.respond
 import io.ktor.routing.*
 import io.ktor.serialization.json
 import io.ktor.sessions.SessionStorageMemory
-import io.ktor.sessions.SessionTransportTransformerMessageAuthentication
 import io.ktor.sessions.Sessions
 import io.ktor.sessions.cookie
 import org.slf4j.event.Level
@@ -41,8 +40,6 @@ fun Application.main() {
     install(Sessions) {
         cookie<User>(USER_SESSION, SessionStorageMemory()) {
             cookie.path = "/"
-            val secretSignKey = "averylongkeythatishardtoguess".toByteArray()
-            transform(SessionTransportTransformerMessageAuthentication(secretSignKey))
         }
     }
     install(EasySpaFeature) {
