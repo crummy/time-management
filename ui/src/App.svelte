@@ -5,14 +5,13 @@
   import Profile from "./routes/Profile.svelte";
   import Timesheets from "./routes/Timesheets.svelte";
   import router from "page";
-  import { getUser } from "./user"
+  import { user } from "./user"
 
   let page;
   export let params = {}
   
   const checkLogin = async (ctx, next) => {
-    params.user = await getUser()
-    if (params.user) {
+    if (await $user) {
       next()
     } else {
       router.redirect("/login")

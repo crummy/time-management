@@ -1,20 +1,12 @@
-import { check, updateUser as updateUserApi} from './api'
+import { writable } from 'svelte/store'
+import { check, updateUser } from './api'
 
-let user
-
-export const getUser = async () => {
-  if (user) return user
-  user = await check()
-  console.log(user)
-  return user
-}
-
-export const updateUser = async (user) => {
-  const response = await updateUserApi(user)
-  if (response.ok) {
-    user = response.json()
-    return user
-  } else {
-    throw response.json()
+const createUser = () => {
+  const { subscribe, set } = writable(check())
+  return {
+    subscribe,
+    set: (user) => set(updateUser(user).then(r => r.json()))
   }
 }
+
+export const user = createUser()

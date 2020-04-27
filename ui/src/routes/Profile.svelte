@@ -2,26 +2,25 @@
   import { onMount } from "svelte";
   import Menu from "../components/Menu.svelte";
   import Message from "../components/Message.svelte";
-  import { updateUser, getUser } from "../user";
+  import { user } from "../user";
 
-  export let params;
-  let { user } = params;
-  let { preferredHours } = user;
   let message = {};
+  let preferredHours;
 
   onMount(async () => {
-    user = await getUser();
-  });
+    preferredHours = await user.prefer
+  })
 
   const handleHoursChange = async () => {
     const updatedUser = {
-      ...user,
+      ...(await $user),
       preferredWorkingHoursPerDay: preferredHours
     };
     try {
-      const user = await updateUser(updatedUser);
+      user.set(updatedUser);
       message = { text: "Your preference has been updated." };
     } catch (e) {
+      console.log(e)
       message = { text: "Failed to update preferences", warning: true };
     }
   };
@@ -35,24 +34,28 @@
 
 <Menu permission={user.permission} selected="profile" />
 
-<h2>Hello, {user.name}</h2>
+{#await $user}
+  <h2>Hello...</h2>
+{:then user}
+  <h2>Hello, {user.name}</h2>
 
-<p>
-  Your current preference is to work
-  <span class="highlight">{user.preferredWorkingHoursPerDay}</span>
-  hours per day.
-</p>
+  <p>
+    Your current preference is to work
+    <span class="highlight">{user.preferredWorkingHoursPerDay}</span>
+    hours per day.
+  </p>
 
-<form class="pure-form" on:submit|preventDefault={handleHoursChange}>
-  <fieldset>
-    <legend>Looking to adjust your hours?</legend>
+  <form class="pure-form" on:submit|preventDefault={handleHoursChange}>
+    <fieldset>
+      <legend>Looking to adjust your hours?</legend>
 
-    <input type="number" bind:value={preferredHours} />
+      <input type="number" bind:value={preferredHours} />
 
-    <button type="submit" class="pure-button pure-button-primary">
-      Update
-    </button>
-  </fieldset>
-</form>
+      <button type="submit" class="pure-button pure-button-primary">
+        Update
+      </button>
+    </fieldset>
+  </form>
 
-<Message {message} />
+  <Message {message} />
+{/await}
