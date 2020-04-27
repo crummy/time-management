@@ -6,7 +6,8 @@
     getAllTimesheets,
     saveTimesheet,
     getUsers,
-    updateTimesheet
+    updateTimesheet,
+    deleteTimesheet
   } from "../api";
   import { user } from "../user";
 
@@ -70,6 +71,12 @@
     await updateTimesheet(user.id, timesheet)
     editedId = null;
   }
+
+  const handleDelete = async (timesheet) => {
+    await deleteTimesheet(timesheet.userId, timesheet.id)
+    handleViewAllToggle();
+    editedId = null;
+  }
 </script>
 
 <style>
@@ -131,6 +138,7 @@
   {#each timesheets as timesheet}
     {#if timesheet.id === editedId}
       <tr>
+        {#if viewAllTimesheets}<td>{timesheet.userId}</td>{/if}
         <td>
           <input
             class="description"
@@ -165,7 +173,7 @@
             bind:value={timesheet.hours} />
         </td>
         <td>
-          <a href="#/" on:click={() => handleEditSave(timesheet)}>Save</a>
+          <a href="#/" on:click={() => handleEditSave(timesheet)}>Save</a> / <a href="#/" on:click={() => handleDelete(timesheet)}>Delete</a>
         </td>
       </tr>
     {:else}

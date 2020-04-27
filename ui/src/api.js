@@ -75,3 +75,9 @@ export const updateTimesheet = async (userId, timesheet) => {
     headers: jsonHeaders
   })
 }
+
+export const deleteTimesheet = async (userId, timesheetId) => {
+  return fetch(`${baseUrl}/users/${userId}/timesheets/${timesheetId}`, {
+    method: "DELETE"
+  })
+}
