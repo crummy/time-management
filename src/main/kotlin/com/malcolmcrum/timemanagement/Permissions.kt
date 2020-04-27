@@ -15,4 +15,14 @@ object Permissions {
             else -> throw ForbiddenException(user?.id)
         }
     }
+
+    fun authorizeManageTimesheet(call: ApplicationCall, userId: String) {
+        val user = call.sessions.get<User>()
+        when {
+            user?.id == userId -> return
+            user?.permission == User.Permission.ADMIN -> return
+            user?.permission == User.Permission.MANAGER -> return
+            else -> throw ForbiddenException(user?.id)
+        }
+    }
 }

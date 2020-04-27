@@ -20,6 +20,8 @@ fun Application.main() {
     val passwordHasher = PasswordHasher()
     val userController = UserController(userDao)
     val securityController = SecurityController(passwordDao, passwordHasher, userDao)
+    val timesheetDao = TimesheetDao()
+    val timesheetController = TimesheetController(timesheetDao)
 
     install(DefaultHeaders)
     install(CallLogging) {
@@ -63,10 +65,15 @@ fun Application.main() {
                     get { userController.getOne(call) }
                     patch { userController.update(call) }
                     delete { userController.delete(call) }
+                    route("timesheets") {
+                        get { timesheetController.get(call) }
+                        patch { timesheetController.update(call) }
+                        delete { timesheetController.delete(call) }
+                    }
                 }
             }
             route("timesheets") {
-
+                get { timesheetController.getAll(call) }
             }
         }
     }
