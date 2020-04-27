@@ -1,4 +1,13 @@
 package com.malcolmcrum.timemanagement
+import com.malcolmcrum.timemanagement.controllers.SecurityController
+import com.malcolmcrum.timemanagement.controllers.TimesheetController
+import com.malcolmcrum.timemanagement.controllers.USER_SESSION
+import com.malcolmcrum.timemanagement.controllers.UserController
+import com.malcolmcrum.timemanagement.persistence.PasswordDao
+import com.malcolmcrum.timemanagement.persistence.TimesheetDao
+import com.malcolmcrum.timemanagement.persistence.UserDao
+import com.malcolmcrum.timemanagement.security.ForbiddenException
+import com.malcolmcrum.timemanagement.security.PasswordHasher
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -59,6 +68,7 @@ fun Application.main() {
             get("check") { securityController.check(call) }
             post("login") { securityController.login(call) }
             post("signup") { securityController.signUp(call)}
+            get("signout") { securityController.signOut(call)}
             route("users") {
                 get { userController.getAll(call) }
                 route("{userId}") {

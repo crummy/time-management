@@ -1,4 +1,4 @@
-package com.malcolmcrum.timemanagement
+package com.malcolmcrum.timemanagement.security
 
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec

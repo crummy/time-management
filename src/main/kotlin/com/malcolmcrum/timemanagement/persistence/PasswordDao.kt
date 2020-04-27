@@ -1,4 +1,4 @@
-package com.malcolmcrum.timemanagement
+package com.malcolmcrum.timemanagement.persistence
 
 class PasswordDao {
     private val passwords = mutableMapOf<String, String>()

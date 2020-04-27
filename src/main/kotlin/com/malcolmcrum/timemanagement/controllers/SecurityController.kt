@@ -1,10 +1,17 @@
-package com.malcolmcrum.timemanagement
+package com.malcolmcrum.timemanagement.controllers
 
+import com.malcolmcrum.timemanagement.NewUser
+import com.malcolmcrum.timemanagement.User
+import com.malcolmcrum.timemanagement.UserLogin
+import com.malcolmcrum.timemanagement.persistence.PasswordDao
+import com.malcolmcrum.timemanagement.persistence.UserDao
+import com.malcolmcrum.timemanagement.security.PasswordHasher
 import io.ktor.application.ApplicationCall
 import io.ktor.http.HttpStatusCode.Companion.Forbidden
 import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.request.receive
 import io.ktor.response.respond
+import io.ktor.sessions.clear
 import io.ktor.sessions.get
 import io.ktor.sessions.sessions
 import io.ktor.sessions.set
@@ -45,5 +52,10 @@ class SecurityController(private val passwordDao: PasswordDao,
             null -> call.respond(Forbidden)
             else -> call.respond(user)
         }
+    }
+
+    suspend fun signOut(call: ApplicationCall) {
+        call.sessions.clear<User>()
+        call.respond(OK)
     }
 }

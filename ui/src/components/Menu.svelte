@@ -1,8 +1,15 @@
 <script>
   import page from "page"
   import { user } from "../user"
+  import { signOut } from "../api"
 
   export let selected = undefined
+
+  const logOut = async () => {
+    await signOut()
+    user.reset()
+    page.redirect("/")
+  }
 </script>
 
 <style>
@@ -30,6 +37,10 @@
     background-color: coral;
     font-weight: bold;
   }
+
+  .right {
+    float: right;
+  }
 </style>
 
 <nav class="container">
@@ -42,6 +53,7 @@
       {#if user.permission === "manager" || user.permission === "ADMIN"}
         <li class:active={selected === "users"}><a href="#/" on:click={() => page.redirect("/users")}>Users</a></li>
       {/if}
+      <li class="right"><a href="#/" on:click={logOut}>Log Out</a></li>
     {/await}
   </ul>
 </nav>

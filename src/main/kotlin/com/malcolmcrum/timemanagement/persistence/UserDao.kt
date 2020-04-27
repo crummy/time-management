@@ -1,4 +1,6 @@
-package com.malcolmcrum.timemanagement
+package com.malcolmcrum.timemanagement.persistence
+
+import com.malcolmcrum.timemanagement.User
 
 class UserDao {
     private val users = mutableMapOf<String, User>()

@@ -1,5 +1,6 @@
-package com.malcolmcrum.timemanagement
+package com.malcolmcrum.timemanagement.security
 
+import com.malcolmcrum.timemanagement.User
 import io.ktor.application.ApplicationCall
 import io.ktor.sessions.get
 import io.ktor.sessions.sessions

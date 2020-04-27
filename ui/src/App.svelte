@@ -11,6 +11,7 @@
   export let params = {}
   
   const checkLogin = async (ctx, next) => {
+    console.log(await $user)
     if (await $user) {
       next()
     } else {

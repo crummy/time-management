@@ -1,5 +1,7 @@
-package com.malcolmcrum.timemanagement
+package com.malcolmcrum.timemanagement.persistence
 
+import com.malcolmcrum.timemanagement.NewTimesheet
+import com.malcolmcrum.timemanagement.Timesheet
 import java.util.concurrent.atomic.AtomicInteger
 
 class TimesheetDao {
