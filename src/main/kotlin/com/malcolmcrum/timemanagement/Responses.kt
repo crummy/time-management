@@ -12,6 +12,10 @@ suspend fun ApplicationCall.notFound(message: String) {
     this.respond(HttpStatusCode.NotFound, Error(message))
 }
 
+suspend fun ApplicationCall.notFound(message: Int) {
+    this.respond(HttpStatusCode.NotFound, Error(message.toString()))
+}
+
 suspend fun ApplicationCall.badRequest(message: String) {
     this.respond(HttpStatusCode.BadRequest, Error(message))
 }

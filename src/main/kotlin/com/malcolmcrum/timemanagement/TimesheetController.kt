@@ -20,20 +20,35 @@ class TimesheetController(val timesheetDao: TimesheetDao) {
 
     suspend fun update(call: ApplicationCall) {
         val userId = call.parameters["userId"]!!
-        Permissions.authorizeManageTimesheet(call, userId)
-        val timesheet = call.receive(Timesheet::class)
+        val timesheetId = call.parameters["timesheetId"]!!.toInt()
+        val updatedTimesheet = call.receive(Timesheet::class)
+        val timesheet = timesheetDao[timesheetId] ?: return call.notFound(timesheetId)
+        if (timesheet.id != timesheetId) {
+            return call.badRequest("Timesheet ID doesn't match: ${timesheet.id} and $timesheetId")
+        } else if (timesheet.userId != userId) {
+            return call.badRequest("User ID doesn't match: ${timesheet.userId} and $userId")
+        }
         Permissions.authorizeManageTimesheet(call, timesheet.userId)
-        timesheetDao[timesheet.id] = timesheet
-        call.respond(timesheet)
+        timesheetDao[updatedTimesheet.id] = updatedTimesheet
+        call.respond(updatedTimesheet)
     }
 
     suspend fun delete(call: ApplicationCall) {
         val userId = call.parameters["userId"]!!
+        val timesheetId = call.parameters["timesheetId"]!!.toInt()
         Permissions.authorizeManageTimesheet(call, userId)
-        val timesheet = call.receive(Timesheet::class)
+        val timesheet = timesheetDao[timesheetId] ?: return call.notFound(timesheetId)
         Permissions.authorizeManageTimesheet(call, timesheet.userId)
-        timesheetDao.delete(timesheet.id)
+        timesheetDao.delete(timesheetId)
         call.respond(OK)
+    }
+
+    suspend fun add(call: ApplicationCall) {
+        val userId = call.parameters["userId"]!!
+        Permissions.authorizeManageTimesheet(call, userId)
+        val newTimesheet = call.receive(NewTimesheet::class)
+        val timesheet = timesheetDao.save(userId, newTimesheet)
+        call.respond(timesheet)
     }
 
 }

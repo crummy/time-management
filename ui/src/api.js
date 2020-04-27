@@ -49,3 +49,29 @@ export const signUp = (id, password, name) => {
     headers: jsonHeaders
   })
 }
+
+export const getTimesheets = async (userId) => {
+  let response = await fetch(`${baseUrl}/users/${userId}/timesheets`);
+  return response.json();
+}
+
+export const getAllTimesheets = async () => {
+  let response = await fetch(`${baseUrl}/timesheets`);
+  return response.json();
+}
+
+export const saveTimesheet = async (userId, timesheet) => {
+  return fetch(`${baseUrl}/users/${userId}/timesheets`, {
+    method: "POST",
+    body: JSON.stringify(timesheet),
+    headers: jsonHeaders
+  })
+}
+
+export const updateTimesheet = async (userId, timesheet) => {
+  return fetch(`${baseUrl}/users/${userId}/timesheets/${timesheet.id}`, {
+    method: "PATCH",
+    body: JSON.stringify(timesheet),
+    headers: jsonHeaders
+  })
+}

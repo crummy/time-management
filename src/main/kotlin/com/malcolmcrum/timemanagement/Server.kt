@@ -67,8 +67,11 @@ fun Application.main() {
                     delete { userController.delete(call) }
                     route("timesheets") {
                         get { timesheetController.get(call) }
-                        patch { timesheetController.update(call) }
-                        delete { timesheetController.delete(call) }
+                        post { timesheetController.add(call)}
+                        route("{timesheetId}") {
+                            patch { timesheetController.update(call) }
+                            delete { timesheetController.delete(call) }
+                        }
                     }
                 }
             }
