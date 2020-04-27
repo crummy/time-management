@@ -1,17 +1,18 @@
 <script>
   import { signIn, signUp } from '../api'
-  import Message, { error } from '../components/Message.svelte'
+  import Message from '../components/Message.svelte'
   import page from 'page'
 
   let logIn = true;
   let username, password, name
+  let loginMessage, signupMessage
 
   const handleSignIn = async (event) => {
     const response = await signIn(username, password)
     const json = await response.json()
     if (!response.ok) {
       const reason = json.error ? json.error : "An unknown error occurred";
-      error("Sign in failed", reason)
+      loginMessage = {title: "Sign in failed", text: reason }
     } else {
       page.redirect('/')
     }
@@ -22,7 +23,7 @@
     const json = await response.json()
     if (!response.ok) {
       const reason = json.error ? json.error : "An unknown error occurred";
-      error("Sign up failed", reason)
+      signupMessage = {title: "Sign up failed", text: reason }
     } else {
       console.log("Signed up!")
       page.redirect('/')
@@ -40,7 +41,7 @@
 <h1>Login</h1>
 
 {#if logIn}
-  <Message />
+  <Message params={loginMessage}/>
   <form class="pure-form pure-form-aligned" on:submit|preventDefault={handleSignIn}>
     <fieldset>
       <legend>Existing user</legend>
@@ -64,7 +65,7 @@
 
   <a href="javascript:;" on:click={() => logIn = false}>Create a new account</a>
 {:else}
-  <Message />
+  <Message params={signupMessage}/>
   <form class="pure-form pure-form-aligned" on:submit|preventDefault={handleSignUp}>
     <fieldset>
       <legend>Create a new account</legend>

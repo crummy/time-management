@@ -38,7 +38,7 @@
   <ul>
     <li class:active={selected === "timesheets"}><a href="#/" on:click={() => page.redirect("/timesheets")}>Timesheets</a></li>
     <li class:active={selected === "profile"}><a href="#/" on:click={() => page.redirect("/profile")}>Profile</a></li>
-    {#if manager}
+    {#if manager || admin}
       <li class:active={selected === "users"}><a href="#/" on:click={() => page.redirect("/users")}>Users</a></li>
     {/if}
   </ul>

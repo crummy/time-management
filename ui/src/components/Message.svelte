@@ -1,27 +1,14 @@
-<script context="module">
-  let title, message;
-  let warning = false
-
-  export const error = (m, t) => {
-    message = m
-    title = t
-    warning = true
-    console.log(message)
-  }
-
-  export const info = (m, t) => {
-    message = m
-    title = t
-    warning = false
-  }
+<script>
+  export let message
+  let { title = undefined, text = undefined, warning = false } = message
 </script>
 
-{#if message}
+{#if message.text}
   <div id="message" class:warning={warning}>
     {#if title}
       <div id="title">{title}</div>
     {/if}
-    {message}
+    {text}
   </div>
 {/if}
 

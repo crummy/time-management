@@ -5,20 +5,17 @@
   import Profile from "./routes/Profile.svelte";
   import Timesheets from "./routes/Timesheets.svelte";
   import router from "page";
-  import { check } from "./api"
+  import { getUser } from "./user"
 
   let page;
-  let params = {}
+  export let params = {}
   
   const checkLogin = async (ctx, next) => {
+    params.user = await getUser()
     if (params.user) {
-      return next()
-    }
-    const user = await check()
-    if (!user) router.redirect("/login")
-    else {
-      params.user = user
       next()
+    } else {
+      router.redirect("/login")
     }
   }
 
@@ -55,6 +52,7 @@
   }
 </style>
 
+<svelte:options accessors/>
 <svelte:head>
 	<title>Time Management</title>
 </svelte:head>

@@ -62,7 +62,7 @@ fun Application.main() {
             post("signup") { securityController.signUp(call)}
             route("users") {
                 get { userController.getAll(call) }
-                route(":userId") {
+                route("{userId}") {
                     get { userController.getOne(call) }
                     patch { userController.update(call) }
                     delete { userController.delete(call) }
