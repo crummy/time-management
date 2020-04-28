@@ -5,6 +5,7 @@ import com.malcolmcrum.timemanagement.User
 import com.malcolmcrum.timemanagement.UserLogin
 import com.malcolmcrum.timemanagement.persistence.PasswordDao
 import com.malcolmcrum.timemanagement.persistence.UserDao
+import com.malcolmcrum.timemanagement.security.ForbiddenException
 import com.malcolmcrum.timemanagement.security.PasswordHasher
 import io.ktor.application.ApplicationCall
 import io.ktor.http.HttpStatusCode.Companion.Forbidden
@@ -29,9 +30,9 @@ class SecurityController(private val passwordDao: PasswordDao,
         if (hash == existingHash) {
             val user = userDao[login.id]!!
             call.sessions.set(user)
-            call.respond(OK)
+            call.respond(user)
         } else {
-            call.respond(Forbidden, "User ${login.id} denied login")
+            throw ForbiddenException(login.id)
         }
     }
 

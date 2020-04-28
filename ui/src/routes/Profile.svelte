@@ -17,7 +17,7 @@
       preferredWorkingHoursPerDay: preferredHours
     };
     try {
-      user.set(updatedUser);
+      user.update(updatedUser);
       message = { text: "Your preference has been updated." };
     } catch (e) {
       console.log(e)

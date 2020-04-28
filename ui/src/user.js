@@ -5,8 +5,9 @@ const createUser = () => {
   const { subscribe, set } = writable(check())
   return {
     subscribe,
-    reset: () => user = Promise.resolve(null),
-    set: (user) => set(updateUser(user).then(r => r.json()))
+    reset: () => set(Promise.resolve(null)),
+    set: (user) => set(Promise.resolve(user)),
+    update: (user) => set(updateUser(user).then(r => r.json()))
   }
 }
 

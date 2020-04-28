@@ -2,6 +2,7 @@
   import { signIn, signUp } from '../api'
   import Message from '../components/Message.svelte'
   import page from 'page'
+  import { user } from '../user'
 
   let logIn = true;
   let username, password, name
@@ -9,23 +10,24 @@
 
   const handleSignIn = async (event) => {
     const response = await signIn(username, password)
-    const json = await response.json()
     if (!response.ok) {
+      const json = await response.json()
       const reason = json.error ? json.error : "An unknown error occurred";
-      loginMessage = {title: "Sign in failed", text: reason }
+      loginMessage = {title: "Sign in failed", text: reason, warning: true }
     } else {
+      user.set(await response.json())
       page.redirect('/')
     }
   }
 
   const handleSignUp = async (event) => {
     const response = await signUp(username, password, name)
-    const json = await response.json()
     if (!response.ok) {
+      const json = await response.json()
       const reason = json.error ? json.error : "An unknown error occurred";
-      signupMessage = {title: "Sign up failed", text: reason }
+      signupMessage = {title: "Sign up failed", text: reason, warning: true }
     } else {
-      console.log("Signed up!")
+      user.set(await response.json())
       page.redirect('/')
     }
   }

@@ -1,18 +1,21 @@
 <script>
   export let message = {}
-  let { title = undefined, text = undefined, warning = false } = message
 </script>
 
 {#if message && message.text}
-  <div id="message" class:warning={warning}>
-    {#if title}
-      <div id="title">{title}</div>
+  <div id="message" class:warning={message.warning}>
+    {#if message.title}
+      <div id="title">{message.title}</div>
     {/if}
-    {text}
+    {message.text}
   </div>
 {/if}
 
 <style>
+  #title {
+    font-weight: bold
+  }
+
   #message {
     background-color: lightblue;
     padding: 1em;

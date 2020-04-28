@@ -60,7 +60,7 @@ fun Application.main() {
     }
     install(StatusPages) {
         exception<ForbiddenException> {
-            call.respond(HttpStatusCode.Forbidden)
+            call.respond(HttpStatusCode.Forbidden, mapOf("error" to it.message))
         }
     }
     routing {
