@@ -36,6 +36,12 @@ export const updateUser = (user) => {
   });
 }
 
+export const deleteUser = (id) => {
+  return fetch(`${baseUrl}/users/${id}`, {
+    method: "DELETE"
+  });
+}
+
 export const signIn = (id, password) => {
   return fetch(`${baseUrl}/login`, {
     method: "POST",

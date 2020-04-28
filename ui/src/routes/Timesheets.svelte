@@ -142,7 +142,6 @@
         <td>
           <input
             class="description"
-            type="description"
             placeholder="Description"
             bind:value={timesheet.description} />
         </td>
