@@ -8,7 +8,6 @@
   import { user } from "./user"
 
   let page;
-  export let params = {}
   
   const checkLogin = async (ctx, next) => {
     const u = await $user
@@ -59,7 +58,7 @@
 </svelte:head>
 <h1>Time Management</h1>
 <main>
-  <svelte:component this={page} {params} />
+  <svelte:component this={page} />
 </main>
 
 <link

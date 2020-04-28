@@ -12,14 +12,10 @@ data class NewTimesheet(val description: String, @Serializable(with = LocalDateS
 @Serializer(forClass = LocalDate::class)
 object LocalDateSerializer : KSerializer<LocalDate> {
     override fun serialize(encoder: Encoder, value: LocalDate) {
-        encoder.encode(Date.serializer(), Date(value.dayOfMonth, value.monthValue, value.year))
+        encoder.encodeString(value.toString())
     }
 
     override fun deserialize(decoder: Decoder): LocalDate {
-        val date = decoder.decode(Date.serializer())
-        return LocalDate.of(date.year, date.month, date.day)
+        return LocalDate.parse(decoder.decodeString())
     }
 }
-
-@Serializable
-data class Date(val day: Int, val month: Int, val year: Int)

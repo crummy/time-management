@@ -11,16 +11,25 @@
   } from "../api";
   import { user } from "../user";
 
+  const dateString = (date) => {
+    const day = date.getDate()
+    const month = date.getMonth() + 1
+    const year = date.getFullYear()
+    return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
+  }
+
   let viewAllTimesheets = false;
   let timesheets = [];
   let canViewAllTimesheets = false;
-  let today = new Date();
+  let date = dateString(new Date())
   let editedId;
   let description, hours;
-  let day = today.getDate();
-  let month = today.getMonth() + 1;
-  let year = today.getFullYear();
   let users = {};
+  let fromDate, toDate
+
+  $: filteredTimesheets = (fromDate && toDate) ? timesheets.filter(timesheet => timesheet.date >= fromDate && timesheet.date <= toDate) : timesheets
+
+
 
   onMount(async () => {
     const user = await $user;
@@ -58,7 +67,7 @@
     const user = await $user;
     const timesheet = {
       description,
-      date: { year, month, day},
+      date,
       hours
     };
     await saveTimesheet(user.id, timesheet);
@@ -66,17 +75,17 @@
     description = null;
   };
 
-  const handleEditSave = async (timesheet) => {
+  const handleEditSave = async timesheet => {
     const user = await $user;
-    await updateTimesheet(user.id, timesheet)
+    await updateTimesheet(user.id, timesheet);
     editedId = null;
-  }
+  };
 
-  const handleDelete = async (timesheet) => {
-    await deleteTimesheet(timesheet.userId, timesheet.id)
+  const handleDelete = async timesheet => {
+    await deleteTimesheet(timesheet.userId, timesheet.id);
     handleViewAllToggle();
     editedId = null;
-  }
+  };
 </script>
 
 <style>
@@ -89,12 +98,6 @@
     margin-top: 1em;
   }
 
-  .year {
-    width: 5em;
-  }
-
-  .day,
-  .month,
   .hoursWorked {
     width: 3em;
   }
@@ -106,10 +109,24 @@
   .overworked {
     background-color: coral;
   }
+
+  label {
+    display: inline-block
+  }
 </style>
 
 <Menu selected="timesheets" />
 
+{#if timesheets.length > 0}
+  <label for="filterFrom">
+    From
+    <input id="filterFrom" type="date" bind:value={fromDate}/>
+  </label>
+  <label for="filterFrom">
+    To
+    <input id="filterFrom" type="date" bind:value={toDate}/>
+  </label>
+{/if}
 {#if canViewAllTimesheets}
   <label for="viewAll">
     <input
@@ -119,7 +136,7 @@
         viewAllTimesheets = !viewAllTimesheets;
         handleViewAllToggle();
       }} />
-    View All
+    All Users
   </label>
 {/if}
 
@@ -135,10 +152,12 @@
       <th />
     </tr>
   </thead>
-  {#each timesheets as timesheet}
+  {#each filteredTimesheets as timesheet}
     {#if timesheet.id === editedId}
       <tr>
-        {#if viewAllTimesheets}<td>{timesheet.userId}</td>{/if}
+        {#if viewAllTimesheets}
+          <td>{timesheet.userId}</td>
+        {/if}
         <td>
           <input
             class="description"
@@ -147,22 +166,9 @@
         </td>
         <td>
           <input
-            class="year"
-            type="number"
-            placeholder="Year"
-            bind:value={timesheet.date.year} />
-          /
-          <input
-            class="month"
-            type="number"
-            placeholder="Month"
-            bind:value={timesheet.date.month} />
-          /
-          <input
-            class="day"
-            type="number"
-            placeholder="Day"
-            bind:value={timesheet.date.day} />
+            class="date"
+            type="date"
+            bind:value={timesheet.date} />
         </td>
         <td>
           <input
@@ -172,7 +178,9 @@
             bind:value={timesheet.hours} />
         </td>
         <td>
-          <a href="#/" on:click={() => handleEditSave(timesheet)}>Save</a> / <a href="#/" on:click={() => handleDelete(timesheet)}>Delete</a>
+          <a href="#/" on:click={() => handleEditSave(timesheet)}>Save</a>
+          /
+          <a href="#/" on:click={() => handleDelete(timesheet)}>Delete</a>
         </td>
       </tr>
     {:else}
@@ -182,7 +190,9 @@
           <td>{timesheet.userId}</td>
         {/if}
         <td>{timesheet.description}</td>
-        <td>{timesheet.date.year}/{timesheet.date.month}/{timesheet.date.day}</td>
+        <td>
+          {timesheet.date}
+        </td>
         <td>{timesheet.hours}</td>
         <td>
           <a href="#/" on:click={() => (editedId = timesheet.id)}>Edit</a>
@@ -200,19 +210,10 @@
           bind:value={description} />
       </td>
       <td>
-        <input
-          class="year"
-          type="number"
-          placeholder="Year"
-          bind:value={year} />
-        /
-        <input
-          class="month"
-          type="number"
-          placeholder="Month"
-          bind:value={month} />
-        /
-        <input class="day" type="number" placeholder="Day" bind:value={day} />
+          <input
+            class="date"
+            type="date"
+            bind:value={date} />
       </td>
       <td>
         <input
