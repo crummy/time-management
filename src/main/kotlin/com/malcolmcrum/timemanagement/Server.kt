@@ -1,8 +1,5 @@
 package com.malcolmcrum.timemanagement
-import com.malcolmcrum.timemanagement.controllers.SecurityController
-import com.malcolmcrum.timemanagement.controllers.TimesheetController
-import com.malcolmcrum.timemanagement.controllers.USER_SESSION
-import com.malcolmcrum.timemanagement.controllers.UserController
+import com.malcolmcrum.timemanagement.controllers.*
 import com.malcolmcrum.timemanagement.persistence.PasswordDao
 import com.malcolmcrum.timemanagement.persistence.TimesheetDao
 import com.malcolmcrum.timemanagement.persistence.UserDao
@@ -11,8 +8,10 @@ import com.malcolmcrum.timemanagement.security.PasswordHasher
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
-import io.ktor.features.*
-import io.ktor.http.HttpMethod
+import io.ktor.features.CallLogging
+import io.ktor.features.ContentNegotiation
+import io.ktor.features.DefaultHeaders
+import io.ktor.features.StatusPages
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.routing.*
@@ -20,8 +19,10 @@ import io.ktor.serialization.json
 import io.ktor.sessions.SessionStorageMemory
 import io.ktor.sessions.Sessions
 import io.ktor.sessions.cookie
+import kotlinx.serialization.modules.serializersModuleOf
 import org.slf4j.event.Level
 import work.jeong.murry.ktor.features.EasySpaFeature
+import java.time.LocalDate
 
 fun Application.main() {
     val userDao = UserDao()
@@ -31,22 +32,14 @@ fun Application.main() {
     val securityController = SecurityController(passwordDao, passwordHasher, userDao)
     val timesheetDao = TimesheetDao()
     val timesheetController = TimesheetController(timesheetDao)
+    val summaryController = SummaryController(timesheetDao)
 
     install(DefaultHeaders)
     install(CallLogging) {
         level = Level.INFO
     }
     install(ContentNegotiation) {
-        json()
-    }
-    install(CORS) { // TODO remove this when hosted
-        anyHost()
-        method(HttpMethod.Options)
-        header("Sec-Fetch-Dest")
-        header("User-Agent")
-        header("Referer")
-        header("Content-Type")
-        header("Accept")
+        json(module = serializersModuleOf(LocalDate::class, LocalDateSerializer))
     }
     install(Sessions) {
         cookie<User>(USER_SESSION, SessionStorageMemory()) {
@@ -81,6 +74,9 @@ fun Application.main() {
                         route("{timesheetId}") {
                             patch { timesheetController.update(call) }
                             delete { timesheetController.delete(call) }
+                        }
+                        route("summary") {
+                            get { summaryController.get(call) }
                         }
                     }
                 }

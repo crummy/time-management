@@ -89,3 +89,12 @@ export const deleteTimesheet = async (userId, timesheetId) => {
     method: "DELETE"
   })
 }
+
+export const getSummary = async (from, to, userId) => {
+  const params = Object.entries({ from, to })
+    .filter(key => key[1])
+    .map((key) => `${key[0]}=${key[1]}`)
+    .join("&")
+  const response = await fetch(`${baseUrl}/users/${userId}/timesheets/summary?${params}`)
+  return response.json()
+}

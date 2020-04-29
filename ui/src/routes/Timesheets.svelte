@@ -10,6 +10,7 @@
     deleteTimesheet
   } from "../api";
   import { user } from "../user";
+  import page from "page"
 
   const dateString = (date) => {
     const day = date.getDate()
@@ -86,6 +87,11 @@
     handleViewAllToggle();
     editedId = null;
   };
+
+  const handleExport = async () => {
+    const user = await $user;
+    page.redirect(`/timesheets/summary?from=${fromDate}&to=${toDate}&user=${user.id}`)
+  }
 </script>
 
 <style>
@@ -112,6 +118,11 @@
 
   label {
     display: inline-block
+  }
+
+  .export {
+    margin: 1em;
+    float: right; 
   }
 </style>
 
@@ -229,3 +240,5 @@
     </tr>
   {/if}
 </table>
+<a class="pure-button export" href="#/" on:click={handleExport}>Export</a>
+

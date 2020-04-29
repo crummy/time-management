@@ -19,3 +19,6 @@ object LocalDateSerializer : KSerializer<LocalDate> {
         return LocalDate.parse(decoder.decodeString())
     }
 }
+
+@Serializable
+data class DaySummary(val totalHours: Float, val descriptions: List<String>)

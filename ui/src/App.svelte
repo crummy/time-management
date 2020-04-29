@@ -4,6 +4,7 @@
   import Error from "./routes/Error.svelte";
   import Profile from "./routes/Profile.svelte";
   import Timesheets from "./routes/Timesheets.svelte";
+  import Summary from "./routes/Summary.svelte"
   import router from "page";
   import { user } from "./user"
 
@@ -23,6 +24,7 @@
   router("/login", () => (page = Login))
   router("/users", checkLogin, () => (page = Users));
   router("/timesheets", checkLogin, () => (page = Timesheets));
+  router("/timesheets/summary", checkLogin, () => (page = Summary));
   router("/profile", checkLogin, () => (page = Profile));
   router("/*", () => (page = Error))
 
