@@ -12,5 +12,5 @@ object PasswordHasher {
         return String(factory.generateSecret(spec).encoded)
     }
 
-    const val SALT = "timemanagementbymalcolmcrum"
+    val SALT = System.getenv("PASSWORD_SALT") ?: "timemanagementbymalcolmcrum"
 }
