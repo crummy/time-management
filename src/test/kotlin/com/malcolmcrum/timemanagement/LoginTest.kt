@@ -58,4 +58,22 @@ internal class LoginTest {
         }
     }
 
+    @Test
+    fun `test sign out`() = withTestApplication(testEnvironment(user, manager, admin)) {
+        cookiesSession {
+            handleRequest(HttpMethod.Post, "/api/login") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                setBody(UserLogin(user.id, user.id).toJson())
+            }
+
+            handleRequest(HttpMethod.Get, "/api/signout").apply {
+                assertEquals(200, response.status()?.value)
+            }
+
+            handleRequest(HttpMethod.Get, "/api/check").apply {
+                assertEquals(403, response.status()?.value)
+            }
+        }
+    }
+
 }
