@@ -240,5 +240,7 @@
     </tr>
   {/if}
 </table>
-<a class="pure-button export" href="#/" on:click={handleExport}>Export</a>
+{#if !viewAllTimesheets}
+  <a class="pure-button export" href="#/" on:click={handleExport}>Export</a>
+{/if}
 
