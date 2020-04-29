@@ -6,7 +6,7 @@ import { terser } from 'rollup-plugin-terser';
 import replace from '@rollup/plugin-replace';
 
 const production = !process.env.ROLLUP_WATCH;
-const BASE_API_URL = process.env.BASE_API_URL
+const BASE_API_URL = process.env.BASE_API_URL || "http://localhost:8080/api"
 
 export default {
 	input: 'src/main.js',
