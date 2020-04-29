@@ -1,10 +1,11 @@
 package com.malcolmcrum.timemanagement.controllers
 
-import com.malcolmcrum.timemanagement.security.Permissions.authorizeManageUsers
 import com.malcolmcrum.timemanagement.User
 import com.malcolmcrum.timemanagement.badRequest
 import com.malcolmcrum.timemanagement.notFound
 import com.malcolmcrum.timemanagement.persistence.UserDao
+import com.malcolmcrum.timemanagement.security.ForbiddenException
+import com.malcolmcrum.timemanagement.security.Permissions.authorizeManageUsers
 import io.ktor.application.ApplicationCall
 import io.ktor.request.receive
 import io.ktor.response.respond
@@ -39,15 +40,19 @@ class UserController(private val userDao: UserDao) {
     suspend fun update(call: ApplicationCall) {
         authorizeManageUsers(call)
         val userId = call.parameters["userId"]!!
-        val user = call.receive(User::class)
-        if (user.id != userId) {
-            return call.badRequest("User ID doesn't match: ${user.id} and $userId")
+        val updatedUser = call.receive(User::class)
+        if (updatedUser.id != userId) {
+            return call.badRequest("User ID doesn't match: ${updatedUser.id} and $userId")
         }
-        userDao[userId] = user
+        val userRequestingUpdate = call.sessions.get<User>()!!
+        if (updatedUser.permission > userRequestingUpdate.permission) {
+            throw ForbiddenException("User ${userRequestingUpdate.id} cannot set user $userId to ${updatedUser.permission}")
+        }
+        userDao[userId] = updatedUser
         val currentUser = call.sessions.get<User>()
-        if (currentUser?.id == user.id) {
-            call.sessions.set(user)
+        if (currentUser?.id == updatedUser.id) {
+            call.sessions.set(updatedUser)
         }
-        call.respond(user)
+        call.respond(updatedUser)
     }
 }

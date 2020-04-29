@@ -24,13 +24,17 @@ import org.slf4j.event.Level
 import work.jeong.murry.ktor.features.EasySpaFeature
 import java.time.LocalDate
 
-fun Application.main() {
+@Suppress("unused")
+fun Application.startServer() {
     val userDao = UserDao()
     val passwordDao = PasswordDao()
-    val passwordHasher = PasswordHasher()
-    val userController = UserController(userDao)
-    val securityController = SecurityController(passwordDao, passwordHasher, userDao)
     val timesheetDao = TimesheetDao()
+    startServer(passwordDao, timesheetDao, userDao)
+}
+
+fun Application.startServer(passwordDao: PasswordDao, timesheetDao: TimesheetDao, userDao: UserDao) {
+    val userController = UserController(userDao)
+    val securityController = SecurityController(passwordDao, PasswordHasher, userDao)
     val timesheetController = TimesheetController(timesheetDao)
     val summaryController = SummaryController(timesheetDao)
 
