@@ -11,7 +11,7 @@
   });
 
   const del = async user => {
-    await deleteUser();
+    await deleteUser(user.id);
     users = await getUsers();
   };
 
