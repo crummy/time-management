@@ -3,6 +3,7 @@ import com.malcolmcrum.timemanagement.controllers.*
 import com.malcolmcrum.timemanagement.persistence.PasswordDao
 import com.malcolmcrum.timemanagement.persistence.TimesheetDao
 import com.malcolmcrum.timemanagement.persistence.UserDao
+import com.malcolmcrum.timemanagement.persistence.createDatabase
 import com.malcolmcrum.timemanagement.security.ForbiddenException
 import com.malcolmcrum.timemanagement.security.PasswordHasher
 import io.ktor.application.Application
@@ -33,6 +34,7 @@ fun Application.startServer() {
 }
 
 fun Application.startServer(passwordDao: PasswordDao, timesheetDao: TimesheetDao, userDao: UserDao) {
+    createDatabase()
     val userController = UserController(userDao)
     val securityController = SecurityController(passwordDao, PasswordHasher, userDao)
     val timesheetController = TimesheetController(timesheetDao)

@@ -1,13 +1,33 @@
 package com.malcolmcrum.timemanagement.persistence
 
+import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
+
 class PasswordDao {
-    private val passwords = mutableMapOf<String, String>()
-
-    operator fun get(id: String): String? {
-        return passwords[id]
+    operator fun get(userId: String): String? {
+        return transaction {
+            val query = Passwords.select { Passwords.userId eq userId }
+            if (query.count() > 0) {
+                query.first()[Passwords.password]
+            } else {
+                null
+            }
+        }
     }
 
-    operator fun set(id: String, password: String) {
-        passwords[id] = password
+    operator fun set(userId: String, password: String) {
+        transaction {
+            Passwords.insert {
+                it[Passwords.userId] = userId
+                it[Passwords.password] = password
+            }
+        }
     }
+}
+
+internal object Passwords: IntIdTable() {
+    val userId = varchar("userId", 256)
+    val password = varchar("hashedPassword", 256)
 }
