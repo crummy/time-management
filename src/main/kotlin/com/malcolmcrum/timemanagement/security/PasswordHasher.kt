@@ -9,8 +9,9 @@ object PasswordHasher {
         val spec = PBEKeySpec(password.toCharArray(), SALT.toByteArray(), 65536, 128)
         val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1")
 
-        return String(factory.generateSecret(spec).encoded)
+        val hashed = factory.generateSecret(spec).encoded
+        return java.util.Base64.getEncoder().encodeToString(hashed)
     }
 
-    val SALT = System.getenv("PASSWORD_SALT") ?: "timemanagementbymalcolmcrum"
+    private val SALT = System.getenv("PASSWORD_SALT") ?: "timemanagementbymalcolmcrum"
 }

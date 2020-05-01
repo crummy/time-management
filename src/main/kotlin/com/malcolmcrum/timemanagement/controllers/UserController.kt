@@ -7,6 +7,7 @@ import com.malcolmcrum.timemanagement.persistence.UserDao
 import com.malcolmcrum.timemanagement.security.ForbiddenException
 import com.malcolmcrum.timemanagement.security.Permissions.authorizeManageUsers
 import io.ktor.application.ApplicationCall
+import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.sessions.get
@@ -21,8 +22,8 @@ class UserController(private val userDao: UserDao) {
     suspend fun delete(call: ApplicationCall) {
         authorizeManageUsers(call)
         val userId = call.parameters["userId"]!!
-        val removed = userDao.remove(userId)
-        call.respond(removed ?: emptyResponse)
+        userDao.remove(userId)
+        call.respond(OK)
     }
 
     suspend fun getAll(call: ApplicationCall) {

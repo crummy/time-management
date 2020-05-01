@@ -4,11 +4,15 @@ import com.malcolmcrum.timemanagement.helpers.cookiesSession
 import com.malcolmcrum.timemanagement.helpers.handleRequest
 import com.malcolmcrum.timemanagement.helpers.testEnvironment
 import com.malcolmcrum.timemanagement.helpers.toJson
+import com.malcolmcrum.timemanagement.persistence.Passwords
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.transaction
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -18,6 +22,12 @@ class UserTest {
     private val manager = User("managerId", "Test Manager", User.Permission.MANAGER, 4f)
     private val admin = User("adminId", "Test Admin", User.Permission.ADMIN, 2f)
 
+    @AfterEach
+    fun `clear database`() {
+        transaction {
+            SchemaUtils.drop(Passwords)
+        }
+    }
 
     @Test
     fun `test admin can list users`() = withTestApplication(testEnvironment(user, manager, admin)) {

@@ -1,29 +1,23 @@
 package com.malcolmcrum.timemanagement.persistence
 
-import org.jetbrains.exposed.sql.SchemaUtils.drop
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.nio.file.Files
+import java.nio.file.Paths
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-internal class PasswordDaoSqlTest {
+internal class PasswordDaoTest {
     lateinit var passwordDao: PasswordDao
 
     @BeforeEach
     fun `set up database`() {
         val url = "jdbc:sqlite:test.db"
+        Files.deleteIfExists(Paths.get("test.db"))
         createDatabase(url)
         passwordDao = PasswordDao()
     }
 
-    @AfterEach
-    fun `clear database`() {
-        transaction {
-            drop(Passwords)
-        }
-    }
 
     @Test
     fun `get missing password`() {

@@ -41,7 +41,7 @@ class SecurityController(private val passwordDao: PasswordDao,
         val newUser = call.receive(NewUser::class)
         val hash = passwordHasher.toHash(newUser.password)
         val user = newUser.toUser()
-        userDao[user.id] = user
+        userDao.add(user)
         passwordDao[user.id] = hash
         call.sessions.set(user)
         call.respond(user)

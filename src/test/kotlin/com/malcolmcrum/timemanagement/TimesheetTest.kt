@@ -35,7 +35,7 @@ internal class TimesheetTest {
     @Test
     fun `test add timesheet`() = withTestApplication(testEnvironment(user)) {
         val newTimesheet = NewTimesheet("did work", LocalDate.now(), 8f)
-        val timesheet = Timesheet(1000, user.id, newTimesheet.description, newTimesheet.date, newTimesheet.hours)
+        val timesheet = Timesheet(1, user.id, newTimesheet.description, newTimesheet.date, newTimesheet.hours)
         cookiesSession {
             handleRequest(HttpMethod.Post, "/api/login") {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())

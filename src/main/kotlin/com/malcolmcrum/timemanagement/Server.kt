@@ -30,11 +30,11 @@ fun Application.startServer() {
     val userDao = UserDao()
     val passwordDao = PasswordDao()
     val timesheetDao = TimesheetDao()
+    createDatabase()
     startServer(passwordDao, timesheetDao, userDao)
 }
 
 fun Application.startServer(passwordDao: PasswordDao, timesheetDao: TimesheetDao, userDao: UserDao) {
-    createDatabase()
     val userController = UserController(userDao)
     val securityController = SecurityController(passwordDao, PasswordHasher, userDao)
     val timesheetController = TimesheetController(timesheetDao)
