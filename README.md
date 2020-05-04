@@ -36,3 +36,15 @@ would query a true database.
 Security is handled by a session ID in a HttpOnly cookie, with passwords hashed with PBKDF2
 and salted. The salted can be overridden with a PASSWORD_HASH environment variable.
 There is no requirement for password complexity. 
+
+
+## TODO
+
+Fixes required:
+
+- Admin can be publicly registered.
+- Regular users don't have the colouring feature implemented.
+- For admins, there's missing the green colouring for entries.
+- No pagination nor lazy loading implemented.
+- Managers have access to the user's entries but not to the user's profiles.
+ - When admin deletes himself, he can still use the app.
