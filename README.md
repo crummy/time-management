@@ -1,8 +1,10 @@
 # Time Management
 
-A simple time management web app for ***REMOVED***.
+A simple multi-user time management system created to demonstrate a fully-functioning
+web-app.
 
-Frontend in Svelte, backend in Kotlin, with an in-memory persistence layer.
+Frontend in Svelte, backend in Kotlin with Ktor and kotlinx.serialization, with persistence
+in SQLite via Exposed. 
 
 ## Instructions
 
